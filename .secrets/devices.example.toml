@@ -1,0 +1,8 @@
+# Copy to .secrets/devices.toml and fill in. Never commit the real file.
+# Each key is a NetBox device name. Only devices listed here can be compared.
+# There is no [default] account and no lookup by IP address.
+
+[devices."sw1"]
+username = "netbox-compare"
+password = "change-me"
+# port = 22            # any other key is passed to NAPALM as optional_args

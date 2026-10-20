@@ -1,0 +1,109 @@
+{% extends 'generic/object.html' %}
+{% load helpers i18n %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  {% if object.is_active %}
+    {# Refresh until the background job has finished. #}
+    <script>setTimeout(() => window.location.reload(), 5000);</script>
+  {% endif %}
+  <div class="row mb-3">
+    <div class="col col-12 col-md-6">
+      <div class="card">
+        <h2 class="card-header">{% trans "Comparison run" %}</h2>
+        <table class="table table-hover attr-table">
+          <tr>
+            <th scope="row">{% trans "Device" %}</th>
+            <td>{{ object.device|linkify }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Status" %}</th>
+            <td>{% badge object.get_status_display object.get_status_color %}</td>
+          </tr>
+          {% if object.error %}
+            <tr>
+              <th scope="row">{% trans "Error" %}</th>
+              <td><code>{{ object.error }}</code></td>
+            </tr>
+          {% endif %}
+          <tr>
+            <th scope="row">{% trans "Divergences" %}</th>
+            <td>
+              {% badge object.critical_count 'red' True %} {% trans "critical" %}
+              {% badge object.warning_count 'orange' True %} {% trans "warning" %}
+              {% badge object.info_count 'blue' True %} {% trans "info" %}
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Started by" %}</th>
+            <td>{{ object.user|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Job" %}</th>
+            <td>{{ object.job|linkify|placeholder }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div class="col col-12 col-md-6">
+      <div class="card">
+        <h2 class="card-header">{% trans "Timing" %}</h2>
+        <table class="table table-hover attr-table">
+          <tr>
+            <th scope="row">{% trans "Created" %}</th>
+            <td>{{ object.created|isodatetime }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Started" %}</th>
+            <td>{{ object.started|isodatetime|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Finished" %}</th>
+            <td>{{ object.finished|isodatetime|placeholder }}</td>
+          </tr>
+        </table>
+      </div>
+      {% if object.policy_snapshot %}
+        <div class="card">
+          <h2 class="card-header">{% trans "Policy used" %}</h2>
+          <div class="card-body"><pre class="mb-0">{{ object.policy_snapshot|json }}</pre></div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col col-12">
+      <div class="card">
+        <h2 class="card-header">{% trans "Divergences" %}</h2>
+        {% if can_resolve %}
+          <form method="post" action="{% url 'plugins:netbox_compare:comparisonrun_resolve' pk=object.pk %}">
+            {% csrf_token %}
+            {% render_table divergence_table 'inc/table.html' %}
+            <div class="card-footer d-flex justify-content-between align-items-center">
+              <span class="text-muted small">
+                {% trans "Update NetBox writes the device's state into NetBox now. Fix device only marks the divergence as needing a fix on the real device; nothing is sent to it." %}
+              </span>
+              <button type="submit" class="btn btn-primary">{% trans "Apply" %}</button>
+            </div>
+          </form>
+          <script>
+            {# A divergence is either sent to NetBox or marked to fix on the device, not both. #}
+            document.querySelectorAll('input[data-resolution-row]').forEach((box) => {
+              box.addEventListener('change', () => {
+                if (!box.checked) return;
+                document.querySelectorAll(`input[data-resolution-row="${box.dataset.resolutionRow}"]`)
+                  .forEach((other) => { if (other !== box) other.checked = false; });
+              });
+            });
+          </script>
+        {% else %}
+          {% render_table divergence_table 'inc/table.html' %}
+        {% endif %}
+      </div>
+      <div class="card">
+        <h2 class="card-header">{% trans "Commands sent to the device" %}</h2>
+        {% render_table command_table 'inc/table.html' %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

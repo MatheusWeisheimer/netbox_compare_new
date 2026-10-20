@@ -1,0 +1,56 @@
+{% extends 'generic/object.html' %}
+{% load helpers i18n %}
+
+{% block content %}
+  <div class="row mb-3">
+    <div class="col col-12 col-md-6">
+      <div class="card">
+        <h2 class="card-header">{% trans "Command" %}</h2>
+        <table class="table table-hover attr-table">
+          <tr>
+            <th scope="row">{% trans "Device" %}</th>
+            <td>{% if object.device %}{{ object.device|linkify }}{% else %}{{ object.device_name }}{% endif %}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Command" %}</th>
+            <td><code>{{ object.command }}</code></td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Result" %}</th>
+            <td>{% checkmark object.success %}</td>
+          </tr>
+          {% if object.error %}
+            <tr>
+              <th scope="row">{% trans "Error" %}</th>
+              <td><code>{{ object.error }}</code></td>
+            </tr>
+          {% endif %}
+          <tr>
+            <th scope="row">{% trans "Run" %}</th>
+            <td>{{ object.run|linkify|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "User" %}</th>
+            <td>{{ object.user|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Started" %}</th>
+            <td>{{ object.started|isodatetime }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Finished" %}</th>
+            <td>{{ object.finished|isodatetime }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div class="col col-12 col-md-6">
+      <div class="card">
+        <h2 class="card-header">{% trans "Output" %}</h2>
+        <div class="card-body">
+          {% if object.output %}<pre class="mb-0">{{ object.output }}</pre>{% else %}<span class="text-muted">{% trans "None" %}</span>{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

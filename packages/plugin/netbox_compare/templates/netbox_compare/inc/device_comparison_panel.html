@@ -1,0 +1,31 @@
+{% load helpers i18n %}
+<div class="card">
+  <h2 class="card-header">{% trans "Latest comparison" %}</h2>
+  {% if run %}
+    <table class="table table-hover attr-table">
+      <tr>
+        <th scope="row">{% trans "Run" %}</th>
+        <td><a href="{{ run.get_absolute_url }}">#{{ run.pk }}</a> ({{ run.created|isodatetime }})</td>
+      </tr>
+      <tr>
+        <th scope="row">{% trans "Status" %}</th>
+        <td>{% badge run.get_status_display run.get_status_color %}</td>
+      </tr>
+      {% if run.status == 'completed' %}
+        <tr>
+          <th scope="row">{% trans "Divergences" %}</th>
+          <td>
+            {% badge run.critical_count 'red' True %} {% trans "critical" %}
+            {% badge run.warning_count 'orange' True %} {% trans "warning" %}
+            {% badge run.info_count 'blue' True %} {% trans "info" %}
+          </td>
+        </tr>
+      {% endif %}
+    </table>
+  {% else %}
+    <div class="card-body text-muted">
+      {% if has_credentials %}{% trans "This device has not been compared yet." %}
+      {% else %}{% trans "No credentials are configured for this device: it can't be compared." %}{% endif %}
+    </div>
+  {% endif %}
+</div>

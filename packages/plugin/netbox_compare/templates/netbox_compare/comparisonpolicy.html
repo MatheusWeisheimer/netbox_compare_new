@@ -1,0 +1,68 @@
+{% extends 'generic/object.html' %}
+{% load helpers i18n %}
+
+{% block content %}
+  <div class="row mb-3">
+    {% for section in object.sections %}
+      <div class="col col-12 col-xl-4">
+        <div class="card">
+          <h2 class="card-header">{{ section.title }}</h2>
+          <table class="table table-hover attr-table">
+            <tr>
+              <th>{% trans "Difference in" %}</th>
+              <th class="text-center">{% trans "Compared" %}</th>
+              <th>{% trans "Severity" %}</th>
+            </tr>
+            {% for item in section.rows %}
+              <tr{% if item.compared is False %} class="text-muted"{% endif %}>
+                <td>
+                  {{ item.row.label }}
+                  {% if item.row.hint %}<i class="mdi mdi-information-outline" title="{{ item.row.hint }}"></i>{% endif %}
+                </td>
+                <td class="text-center">
+                  {% if item.compared is None %}
+                    <span class="text-muted">{% trans "always" %}</span>
+                  {% else %}
+                    {% checkmark item.compared %}
+                  {% endif %}
+                </td>
+                <td>
+                  {% if item.compared is False %}
+                    {{ ''|placeholder }}
+                  {% else %}
+                    {% badge item.severity_label item.severity_color %}
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+            {% if section.name == "interface" %}
+              <tr>
+                <th scope="row">{% trans "Ignored interfaces" %}</th>
+                <td colspan="2">
+                  {% for pattern in object.ignore_interfaces %}
+                    <code>{{ pattern }}</code>{% if not forloop.last %} {% endif %}
+                  {% empty %}
+                    {{ ''|placeholder }}
+                  {% endfor %}
+                </td>
+              </tr>
+            {% endif %}
+          </table>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="row mb-3">
+    <div class="col col-12 col-xl-4">
+      <div class="card">
+        <h2 class="card-header">{% trans "Options" %}</h2>
+        <table class="table table-hover attr-table">
+          <tr>
+            <th scope="row">{% trans "Skip fields empty in NetBox" %}</th>
+            <td>{% checkmark object.skip_undocumented %}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}

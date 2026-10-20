@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "netbox-compare-plugin"
+version = "0.1.0"
+description = "NetBox plugin: compare documented and running device state with netbox-compare-access."
+requires-python = ">=3.12"
+# Installed into NetBox's own environment, next to NetBox itself.
+dependencies = ["netbox-compare-access"]
+
+[tool.setuptools.packages.find]
+include = ["netbox_compare*"]
+
+[tool.setuptools.package-data]
+netbox_compare = ["templates/**"]

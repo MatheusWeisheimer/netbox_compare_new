@@ -1,0 +1,50 @@
+{% extends 'generic/_base.html' %}
+{% load helpers i18n %}
+
+{% block title %}{% trans "Delete from NetBox?" %}{% endblock %}
+
+{% block content %}
+  <div class="alert alert-danger bg-danger-subtle" role="alert">
+    <div class="d-flex">
+      <div><i class="mdi mdi-alert-octagon p-2"></i></div>
+      <div>
+        <h4 class="alert-title">{% trans "Confirm deletion" %}</h4>
+        {% blocktrans trimmed with device=object.device %}
+          These objects were not found on {{ device }}. Updating NetBox deletes them.
+        {% endblocktrans %}
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <table class="table table-hover">
+      <tr>
+        <th>{% trans "Object" %}</th>
+        <th>{% trans "Deleted with it" %}</th>
+      </tr>
+      {% for divergence, related in deleting %}
+        <tr>
+          <td>{{ divergence.object_type }} <code>{{ divergence.key }}</code></td>
+          <td>
+            {% for ip in related %}
+              <code>{{ ip }}</code>{% if not forloop.last %} {% endif %}
+            {% empty %}
+              {{ ''|placeholder }}
+            {% endfor %}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    {% for pk in to_document %}<input type="hidden" name="netbox" value="{{ pk }}">{% endfor %}
+    {% for pk in to_fix %}<input type="hidden" name="fix_device" value="{{ pk }}">{% endfor %}
+    <input type="hidden" name="confirm" value="1">
+    <div class="text-end">
+      <a href="{{ object.get_absolute_url }}" class="btn btn-outline-secondary">{% trans "Cancel" %}</a>
+      <button type="submit" class="btn btn-danger">{% trans "Confirm" %}</button>
+    </div>
+  </form>
+{% endblock %}

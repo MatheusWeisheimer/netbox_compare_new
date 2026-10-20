@@ -1,0 +1,59 @@
+{% extends 'generic/object_edit.html' %}
+{% load form_helpers i18n %}
+
+{% block form %}
+  {% render_errors form %}
+
+  {% for section in form.sections %}
+    <div class="field-group mb-5">
+      <div class="row">
+        <h2 class="col-9 offset-3">{{ section.title }}</h2>
+      </div>
+      <div class="row mb-3">
+        <div class="col-9 offset-3">
+          <table class="table table-sm align-middle mb-0">
+            <thead>
+              <tr>
+                <th>{% trans "Difference in" %}</th>
+                <th class="text-center" style="width: 7rem">{% trans "Compare" %}</th>
+                <th style="width: 12rem">{% trans "Severity" %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in section.rows %}
+                <tr{% if item.compare.errors or item.severity.errors %} class="table-danger"{% endif %}>
+                  <td>
+                    {% if item.compare %}
+                      <label for="{{ item.compare.id_for_label }}">{{ item.row.label }}</label>
+                    {% else %}
+                      <label for="{{ item.severity.id_for_label }}">{{ item.row.label }}</label>
+                    {% endif %}
+                    {% if item.row.hint %}<div class="form-text mt-0">{{ item.row.hint }}</div>{% endif %}
+                  </td>
+                  <td class="text-center">
+                    {% if item.compare %}
+                      {{ item.compare }}
+                    {% else %}
+                      <span class="text-muted" title="{% trans "Always compared" %}">{% trans "always" %}</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ item.severity }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% if section.name == "interface" %}
+        {% render_field form.ignore_interfaces %}
+      {% endif %}
+    </div>
+  {% endfor %}
+
+  <div class="field-group mb-5">
+    <div class="row">
+      <h2 class="col-9 offset-3">{% trans "Options" %}</h2>
+    </div>
+    {% render_field form.skip_undocumented %}
+  </div>
+{% endblock form %}

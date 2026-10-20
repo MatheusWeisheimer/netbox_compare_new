@@ -1,0 +1,7 @@
+{% load i18n %}
+<form action="{% url 'plugins:netbox_compare:device_compare' pk=object.pk %}" method="post" class="d-inline">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-primary">
+    <i class="mdi mdi-compare-horizontal" aria-hidden="true"></i> {% trans "Compare with device" %}
+  </button>
+</form>

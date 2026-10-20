@@ -1,0 +1,59 @@
+{% extends 'generic/object.html' %}
+{% load helpers i18n %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <div class="row mb-3">
+    <div class="col col-12 col-md-5">
+      <div class="card">
+        <h2 class="card-header">{% trans "Schedule" %}</h2>
+        <table class="table table-hover attr-table">
+          <tr>
+            <th scope="row">{% trans "Name" %}</th>
+            <td>{{ object.name }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Enabled" %}</th>
+            <td>{% checkmark object.enabled %}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Weekdays" %}</th>
+            <td>{{ object.get_weekdays_display }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Time of day" %}</th>
+            <td>{{ object.time_of_day|date:"H:i" }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Next run" %}</th>
+            <td>{{ object.next_run|isodatetime|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Last run" %}</th>
+            <td>{{ object.last_run|isodatetime|placeholder }}</td>
+          </tr>
+          <tr>
+            <th scope="row">{% trans "Runs as" %}</th>
+            <td>{{ object.user|placeholder }}</td>
+          </tr>
+        </table>
+      </div>
+      <div class="card">
+        <h2 class="card-header">{% trans "Devices" %}</h2>
+        <ul class="list-group list-group-flush">
+          {% for device in object.devices.all %}
+            <li class="list-group-item">{{ device|linkify }}</li>
+          {% empty %}
+            <li class="list-group-item text-muted">{% trans "No devices" %}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    <div class="col col-12 col-md-7">
+      <div class="card">
+        <h2 class="card-header">{% trans "Latest comparisons" %}</h2>
+        {% render_table run_table 'inc/table.html' %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
