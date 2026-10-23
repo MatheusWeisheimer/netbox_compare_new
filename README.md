@@ -2,8 +2,6 @@
 
 Plugin do NetBox 4.5 que compara o que o NetBox documenta sobre um equipamento com o que ele executa.
 
-Requisitos: NetBox 4.5.x (Python 3.12+), `netbox-rq` em execução, e cada equipamento com plataforma (`VRP`/`Junos`) e IP primário no NetBox.
-
 ## Instalação
 
 git clone https://github.com/MatheusWeisheimer/netbox_compare_new.git
