@@ -4,31 +4,49 @@ Plugin do NetBox 4.5 que compara o que o NetBox documenta sobre um equipamento c
 
 ## Instalação
 
+### 1. Instalar o plugin
+
+```bash
 git clone https://github.com/MatheusWeisheimer/netbox_compare_new.git
-
+cd netbox_compare_new
 sudo /opt/netbox/venv/bin/pip install ./packages/access ./packages/plugin
+```
 
-## Configuração
+### 2. Habilitar o plugin
 
-1. Em `/opt/netbox/netbox/netbox/configuration.py`:
+Edite `/opt/netbox/netbox/netbox/configuration.py`:
 
+```python
 PLUGINS = ["netbox_compare"]
+
 PLUGINS_CONFIG = {
-    "netbox_compare": {"credentials_file": "/etc/netbox/compare/devices.toml"},
+    "netbox_compare": {
+        "credentials_file": "/etc/netbox/compare/devices.toml",
+    },
 }
+```
 
-2. Crie o arquivo de credenciais (modelo em `.secrets/devices.example.toml`), com uma tabela por
-   equipamento, usando o nome dele no NetBox:
+### 3. Criar o arquivo de credenciais
 
+Copie o modelo e edite:
+
+```bash
+sudo mkdir -p /etc/netbox/compare
+sudo cp .secrets/devices.example.toml /etc/netbox/compare/devices.toml
+sudo nano /etc/netbox/compare/devices.toml
+```
+
+Use uma tabela por equipamento, com o mesmo nome do dispositivo no NetBox:
+
+```toml
 [devices."rtr-poa-01"]
 username = "..."
 password = "..."
+```
 
-   `chmod 600`, dono = usuário do `netbox-rq`.
+### 4. Aplicar migrações
 
-3. Migre e reinicie:
-
-cd /opt/netbox/netbox
-sudo /opt/netbox/venv/bin/python manage.py migrate
-sudo systemctl restart netbox netbox-rq
+```bash
+cd /opt/netbox
+sudo /opt/netbox/venv/bin/python netbox/manage.py migrate
 ```
