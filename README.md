@@ -5,7 +5,7 @@ Plugin do NetBox 4.5 que compara o que o NetBox documenta sobre um equipamento c
 ## Instalação
 
 git clone https://github.com/MatheusWeisheimer/netbox_compare_new.git
-cd netbox_compare_new
+
 sudo /opt/netbox/venv/bin/pip install ./packages/access ./packages/plugin
 
 ## Configuração
